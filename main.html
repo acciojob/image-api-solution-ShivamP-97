@@ -20,30 +20,33 @@
 	<img id="processedImage">
 
 	<script>
-		const processImage = () => {
+		function processImage() {
 			const file = document.getElementById('imageInput').files[0];
-			const url = 'https://api.imagga.com/v2/colors';
+			if (!file) {
+                alert("Please select an image first!");
+                return;
+            }
 
-			const formData = new FormData();
-			formData.append('image', file);
+            const formData = new FormData();
+            formData.append("image", file);
 
-			fetch(url, {
-				method: 'POST',
-				body: formData,
-				headers: {
-					'Authorization': 'Basic ' + btoa('api_key:api_secret')
-				}
-			})
-				.then(response => response.json())
-				.then(data => {
-					const originalImage = document.getElementById('originalImage');
-					const processedImage = document.getElementById('processedImage');
+            document.getElementById("originalImage").src = URL.createObjectURL(file);
 
-					originalImage.src = URL.createObjectURL(file);
-					processedImage.src = data.result.colors.image_colors[0].closest_palette_color_html;
-				})
-				.catch(error => console.error(error));
-		};
+            const url = "https://api.deepai.org/api/toonify";
+
+            fetch(url, {
+                method: "POST",
+                headers: {
+                    "api-key": "quickstart-QUdJIGlzIGNvbWluZy4uLi4K"
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById("processedImage").src = data.output_url;
+            })
+            .catch(err => console.error("Error:", err));
+        }
 	</script>
 </body>
 
